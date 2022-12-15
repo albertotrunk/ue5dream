@@ -14,7 +14,11 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--prefix", type=str, nargs="?", default="UE5Dream-", help="the dream to render"
+    "--negative_prompt", type=str, nargs="?", default="", help="the nightmare to don't dream"
+)
+
+parser.add_argument(
+    "--use_depth",  type=str, default="false"
 )
 
 parser.add_argument(
@@ -54,51 +58,28 @@ stability_api = client.StabilityInference(
     # stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-inpainting-v1-0 stable-inpainting-512-v2-0
 )
 
+mask_img = None
 init_img = Image.open(os.path.join(unreal.Paths.screen_shot_dir(), "dream_color.png"))
 
+if opt.use_depth == "true":
+    mask_img = Image.open(os.path.join(unreal.Paths.screen_shot_dir(), "dream_mask.png"))
+
 seed = [random.randrange(0, 4294967295)]
-
-negative = [
-    "Ugly",
-    "Morbid",
-    "Extra fingers",
-    "Poorly drawn hands",
-    "Mutation",
-    "Blurry",
-    "Extra limbs",
-    "Gross proportions",
-    "Missing arms",
-    "Long neck",
-    "Duplicate",
-    "Mutated hands",
-    "Mutilated",
-    "Mutilated hands",
-    "Deformed",
-    "Poorly drawn face",
-    "Cloned face",
-    "Bad anatomy",
-    "Malformed limbs",
-    "Missing legs",
-    "Too many fingers"
-]
-
-separator = ', '
-negative = separator.join(negative)
 
 # the object returned is a python generator
 answers = stability_api.generate(
     prompt= [generation.Prompt(text=opt.prompt,parameters=generation.PromptParameters(weight=1)),
-    generation.Prompt(text=negative,parameters=generation.PromptParameters(weight=-1.3))], # Negative prompting is now possible via the API, simply assign a negative weight to a prompt.
+    generation.Prompt(text=opt.negative_prompt,parameters=generation.PromptParameters(weight=-1.3))], # Negative prompting is now possible via the API, simply assign a negative weight to a prompt.
     # In the example above we are combining a mountain landscape with the style of thomas kinkade, and we are negative prompting trees out of the resulting concept.
     # When determining prompt weights, the total possible range is [-10, 10] but we recommend staying within the range of [-2, 2].
     seed=seed, # if provided, specifying a random seed makes results deterministic
-    steps=40, # defaults to 30 if not specified
-    height=512,
-    width=512,
+    steps=20, # defaults to 30 if not specified
+    height=768,
+    width=768,
     start_schedule=opt.strength, # this controls the "strength" of the prompt relative to the init image
     cfg_scale=9,
     init_image=init_img,
-    #mask_image=mask_img,
+    mask_image=mask_img,
     sampler=generation.SAMPLER_DDIM,
     # Choose which sampler we want to denoise our generation with.
     # Defaults to k_dpmpp_2m if not specified. Clip Guidance only supports ancestral samplers.
