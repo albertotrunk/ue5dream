@@ -26,7 +26,6 @@ parser.add_argument(
 
 parser.add_argument(
     "--engine",
-    "-e",
     type=str,
     help="engine to use for inference",
     default="stable-diffusion-v1-5",
@@ -50,7 +49,7 @@ os.environ['STABILITY_KEY'] = opt.STABILITY_KEY
 stability_api = client.StabilityInference(
     key=os.environ['STABILITY_KEY'],
     verbose=False,
-    engine="stable-diffusion-512-v2-1" # Set the engine to use for generation.
+    engine=f"{opt.engine}" # Set the engine to use for generation.
     # Available engines: stable-diffusion-v1 stable-diffusion-v1-5 stable-diffusion-512-v2-0 stable-diffusion-768-v2-0
     # stable-diffusion-512-v2-1 stable-diffusion-768-v2-1 stable-inpainting-v1-0 stable-inpainting-512-v2-0
 )
