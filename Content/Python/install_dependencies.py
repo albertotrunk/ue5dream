@@ -26,7 +26,7 @@ def install_dependencies(pip_dependencies):
             dep_path = dep_options["url"] if "url" in dep_options.keys() else ""
             dep_force_upgrade = dep_options["upgrade"] if "upgrade" in dep_options.keys() else True
             extra_flags = dep_options["args"].split(' ') if "args" in dep_options.keys() else []
-            print("Installing dependency " + dep_name)
+            print(f"Installing dependency {dep_name}")
             if slow_task.should_cancel():         # True if the user has pressed Cancel in the UI
                 break
 
@@ -63,7 +63,7 @@ def clone_dependency(repo_name, repo_url):
     from git import Repo, exc
     import git
 
-    print("Cloning dependency " + repo_name)
+    print(f"Cloning dependency {repo_name}")
     repo_path = os.path.join(unreal.Paths().engine_saved_dir(), "pythonrepos", repo_name)
     repo = None
     try:

@@ -2,7 +2,7 @@ def clean_prompt(prompt):
   badchars = re.compile(r'[/\\]')
   prompt = badchars.sub('_', prompt)
   if len(prompt) > 100:
-    prompt = prompt[:100] + '…'
+    prompt = f'{prompt[:100]}…'
   return prompt
 
 def format_filename(timestamp, seed, index, prompt):
